@@ -6,3 +6,5 @@
 #include <vector>
 #include <memory>
 #include <stdexcept>
+#include <cstdlib>
+#include <cstring>
