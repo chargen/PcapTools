@@ -1,9 +1,4 @@
 cmake_minimum_required (VERSION 2.8)
-project (${PROJECT})
-enable_testing()
-
-INCLUDE (CPack)
-INCLUDE (CTest)
 
 option(TODO "Enable TODO items that are in progress" OFF)
 option(TESTS "Enable building of extended test code in library" ON)
@@ -11,12 +6,33 @@ option(EXAMPLES "Enable building of example programs" ON)
 option(TOOLS "Enable building of tools" ON)
 option(TOOLS_DEV "Enable building of tools-dev" ON)
 
-if(CMAKE_MAKE_PROGRAM MATCHES "(msdev|devenv|nmake|MSBuild)")
+project (${PROJECT})
+enable_testing()
+
+INCLUDE (CPack)
+INCLUDE (CTest)
+
+set(CMAKE_CXX_FLAGS                "-Wall -std=c++11")
+set(CMAKE_CXX_FLAGS_DEBUG          "-O0 -g")
+set(CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE        "-O4 -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+
+# Compiler-specific C++11 activation.
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+    execute_process(
+        COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
+    if (NOT (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7))
+        message(FATAL_ERROR "${PROJECT_NAME} requires g++ 4.7 or greater.")
+    endif ()
+elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+elseif(CMAKE_MAKE_PROGRAM MATCHES "(msdev|devenv|nmake|MSBuild)")
     add_definitions("/W2")
-else()
-    add_definitions("-Wall -Wextra")
-    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -stdlib=libc++")    
-endif()
+else ()
+    message(FATAL_ERROR "Your C++ compiler does not support C++11.")
+endif ()
+
 
 if(TODO MATCHES "ON")
    add_definitions("-DTODO=1")
@@ -26,16 +42,10 @@ endif()
 
 set(LIBS ${LIBS} ${CHECK_LIBRARIES} ${PROJECT})
 
-include_directories( include ${ADDITIONAL_INCLUDE_DIRECTORIES} )
+include_directories( include  )
 
-if(TESTS MATCHES "ON")
-   message(STATUS "Extended test code functions are enabled")
-   file(GLOB PROJECT_INCLUDES "include/*.hpp" "include/tests/*.hpp" "include/*.h" "include/tests/*.h" )
-   file(GLOB PROJECT_SRC "src/*.c" "src/test/*.c" "src/*.cpp" "src/test/*.cpp")
-else()
-   file(GLOB PROJECT_INCLUDES "include/*.h" "include/*.hpp")
-   file(GLOB PROJECT_SRC "src/*.c" "src/*.cpp" )
-endif()
+file(GLOB PROJECT_INCLUDES "include/*.hpp" "include/*/*.hpp")
+file(GLOB PROJECT_SRC "src/*.cpp" "src/*/*.cpp" )
 
 add_library (${PROJECT} ${PROJECT_SRC} ${PROJECT_INCLUDES})
 
