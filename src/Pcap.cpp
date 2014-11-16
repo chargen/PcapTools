@@ -25,7 +25,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "Pcap_world.hpp"
-#include <sys/time.h>
 #include "Pcap.hpp"
 
 namespace Pcap
