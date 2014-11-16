@@ -73,7 +73,7 @@ inline file_ptr make_cfile( std::string const &filename, const char *mode )
 {
     FILE *f;
 #if defined( _WIN32 )
-    std::fopen_s( &f, filename.c_str(), mode );
+    fopen_s( &f, filename.c_str(), mode );
 #else
     f = std::fopen( filename.c_str(), mode );
 #endif
