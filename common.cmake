@@ -19,15 +19,15 @@ set(CMAKE_CXX_FLAGS_RELEASE        "-O4 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
 
 # Compiler-specific C++11 activation.
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+if (${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
     execute_process(
         COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
     if (NOT (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7))
         message(FATAL_ERROR "${PROJECT_NAME} requires g++ 4.7 or greater.")
     endif ()
-elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-elseif(CMAKE_MAKE_PROGRAM MATCHES "(msdev|devenv|nmake|MSBuild)")
+elseif(${CMAKE_MAKE_PROGRAM} MATCHES "(msdev|devenv|nmake|MSBuild)")
     add_definitions("/W2")
 else ()
     message(FATAL_ERROR "Your C++ compiler does not support C++11.")
@@ -44,8 +44,8 @@ set(LIBS ${LIBS} ${CHECK_LIBRARIES} ${PROJECT})
 
 include_directories( include  )
 
-file(GLOB PROJECT_INCLUDES "include/*.hpp" "include/*/*.hpp")
-file(GLOB PROJECT_SRC "src/*.cpp" "src/*/*.cpp" )
+file(GLOB PROJECT_INCLUDES "include/*.h" "include/*.hpp" "include/*/*.h" "include/*/*.hpp")
+file(GLOB PROJECT_SRC "src/*.c" "src/*.cpp" "src/*/*.c" "src/*/*.cpp" )
 
 add_library (${PROJECT} ${PROJECT_SRC} ${PROJECT_INCLUDES})
 
