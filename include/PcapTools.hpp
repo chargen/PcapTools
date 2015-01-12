@@ -26,21 +26,12 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "Pcap_world.hpp"
-#include "Pcap.hpp"
+#include "PcapTools/World.hpp"
+#include "PcapTools/Utils.hpp"
+#include "PcapTools/FileReader.hpp"
+#include "PcapTools/FileWriter.hpp"
+#include "PcapTools/PacketConsumer.hpp"
 
-namespace Pcap
-{
 
-class PacketConsumer
-{
-  public:
-    virtual ~PacketConsumer() {}
 
-    virtual void processPacket( uint64_t timestamp_in_microseconds,
-                                uint8_t const da[6],
-                                uint8_t const sa[6],
-                                uint16_t ethertype,
-                                PcapFilePacket const &packet_payload ) = 0;
-};
-}
+

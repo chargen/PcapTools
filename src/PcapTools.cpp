@@ -24,51 +24,10 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "Pcap_world.hpp"
-#include "Pcap.hpp"
+#include "PcapTools/World.hpp"
+#include "PcapTools.hpp"
 
-namespace Pcap
+namespace PcapTools
 {
-
-#ifdef _WIN32
-
-#if defined( _MSC_VER ) || defined( _MSC_EXTENSIONS )
-#define DELTA_EPOCH_IN_MICROSECS 11644473600000000Ui64
-#else
-#define DELTA_EPOCH_IN_MICROSECS 11644473600000000ULL
-#endif
-
-int gettimeofday( struct timeval *tv, struct timezone * );
-
-int gettimeofday( struct timeval *tv, struct timezone * )
-{
-    FILETIME ft;
-    unsigned __int64 tmpres = 0;
-    static int tzflag;
-    if ( NULL != tv )
-    {
-        GetSystemTimeAsFileTime( &ft );
-        tmpres |= ft.dwHighDateTime;
-        tmpres <<= 32;
-        tmpres |= ft.dwLowDateTime;
-        /*converting file time to unix epoch*/
-        tmpres /= 10; /*convert into microseconds*/
-        tmpres -= DELTA_EPOCH_IN_MICROSECS;
-        tv->tv_sec = (long)( tmpres / 1000000UL );
-        tv->tv_usec = (long)( tmpres % 1000000UL );
-    }
-    return 0;
-}
-#endif
-
-uint64_t get_current_time_in_microseconds()
-{
-    uint64_t t = 0;
-    struct timeval tv;
-    if ( gettimeofday( &tv, 0 ) == 0 )
-    {
-        return ( uint64_t )( ( tv.tv_sec * 1000000 ) + ( tv.tv_usec ) );
-    }
-    return t;
-}
+    const char *pcaptools_file = __FILE__;
 }

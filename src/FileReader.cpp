@@ -24,10 +24,10 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "Pcap_world.hpp"
-#include "PcapFileReader.hpp"
+#include "PcapTools/World.hpp"
+#include "PcapTools/FileReader.hpp"
 
-namespace Pcap
+namespace PcapTools
 {
 PcapFileReader::PcapFileReader( std::string const &filename )
     : m_fd( make_cfile( filename, "rb" ) )

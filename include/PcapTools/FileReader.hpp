@@ -26,28 +26,29 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "Pcap_world.hpp"
-#include "Pcap.hpp"
+#include "PcapTools/World.hpp"
+#include "PcapTools/Utils.hpp"
 
-namespace Pcap
+namespace PcapTools
 {
-class PcapFileWriter
+class PcapFileReader
 {
   public:
-    PcapFileWriter( std::string const &filename );
-    virtual ~PcapFileWriter();
+    PcapFileReader( std::string const &filename );
+    virtual ~PcapFileReader();
 
-    void WritePacket( PcapFilePacket const &packet );
-    void WritePacket( uint64_t time_in_micros, PcapFilePacket const &packet );
-    void WritePacket( uint8_t const da[6], uint8_t const sa[6], uint16_t ethertype, PcapFilePacket const &packet_payload );
-    void WritePacket( uint64_t time_in_micros,
-                      uint8_t const da[6],
-                      uint8_t const sa[6],
-                      uint16_t ethertype,
-                      PcapFilePacket const &packet_payload );
+    bool ReadPacket( uint64_t *timestamp_in_microseconds, PcapFilePacket &results );
+    bool ReadPacket( uint64_t *timestamp_in_microseconds,
+                     uint8_t da[6],
+                     uint8_t sa[6],
+                     uint16_t *ethertype,
+                     PcapFilePacket *packet_payload );
 
   private:
     file_ptr m_fd;
     std::string m_filename;
+    bool m_swap;
+    bool m_seen_first_timestamp;
+    uint64_t m_first_timestamp_in_microseconds;
 };
 }

@@ -26,9 +26,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "Pcap_world.hpp"
+#include "PcapTools/World.hpp"
 
-namespace Pcap
+namespace PcapTools
 {
 uint64_t get_current_time_in_microseconds();
 
