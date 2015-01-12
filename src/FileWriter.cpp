@@ -31,13 +31,13 @@ namespace PcapTools
 {
 
 PcapFileWriter::PcapFileWriter( std::string const &filename )
-    : m_fd( make_cfile( filename, "rb" ) ), m_filename( filename )
+    : m_file( filename, "rb" ), m_filename( filename )
 {
-    if ( m_fd )
+    if ( m_file.get() )
     {
         /* yes, so close and re-open in append mode */
-        m_fd = make_cfile( filename, "a+b" );
-        if ( !m_fd )
+        m_file.open( filename, "a+b" );
+        if ( !m_file.get() )
         {
             throw std::runtime_error(
                 std::string( "Error appending to pcap file: " ) + filename );
@@ -48,9 +48,9 @@ PcapFileWriter::PcapFileWriter( std::string const &filename )
         /* The file does not already exist, so create the file and add a
          * wireshark pcap header */
         /* create data logging file in current directory */
-        m_fd = make_cfile( filename, "wb" );
+        m_file.open( filename, "wb" );
 
-        if ( m_fd )
+        if ( m_file.get() )
         {
             pcap_hdr_t header;
             header.magic_number = 0xa1b2c3d4;
@@ -60,7 +60,7 @@ PcapFileWriter::PcapFileWriter( std::string const &filename )
             header.sigfigs = 0;
             header.snaplen = 0xffff;
             header.network = 1;
-            if ( std::fwrite( &header, sizeof( header ), 1, m_fd.get() ) )
+            if ( std::fwrite( &header, sizeof( header ), 1, m_file.get() ) )
             {
                 throw std::runtime_error(
                     std::string( "Error writing pcap file: " ) + filename );
@@ -94,13 +94,13 @@ void PcapFileWriter::WritePacket( uint64_t time_in_micros,
         pktheader.ts_usec = uint32_t( time_in_micros % 1000000 );
         pktheader.incl_len = uint32_t( packet.size() );
         pktheader.orig_len = pktheader.incl_len;
-        if ( std::fwrite( &pktheader, sizeof( pktheader ), 1, m_fd.get() )
+        if ( std::fwrite( &pktheader, sizeof( pktheader ), 1, m_file.get() )
              != 1 )
         {
             throw std::runtime_error(
                 std::string( "Error writing to pcap file: " ) + m_filename );
         }
-        if ( std::fwrite( &packet[0], packet.size(), 1, m_fd.get() ) != 1 )
+        if ( std::fwrite( &packet[0], packet.size(), 1, m_file.get() ) != 1 )
         {
             throw std::runtime_error(
                 std::string( "Error writing to pcap file: " ) + m_filename );
@@ -128,34 +128,34 @@ void PcapFileWriter::WritePacket( uint64_t packet_time_in_micros,
     pktheader.ts_usec = uint32_t( packet_time_in_micros % 1000000 );
     pktheader.incl_len = int( packet_payload.size() + 14 );
     pktheader.orig_len = pktheader.incl_len;
-    if ( std::fwrite( &pktheader, sizeof( pktheader ), 1, m_fd.get() ) != 1 )
+    if ( std::fwrite( &pktheader, sizeof( pktheader ), 1, m_file.get() ) != 1 )
     {
         throw std::runtime_error( std::string( "Error writing to pcap file: " )
                                   + m_filename );
     }
-    if ( std::fwrite( da, 6, 1, m_fd.get() ) != 1 )
+    if ( std::fwrite( da, 6, 1, m_file.get() ) != 1 )
     {
         throw std::runtime_error( std::string( "Error writing to pcap file: " )
                                   + m_filename );
     }
 
-    if ( std::fwrite( sa, 6, 1, m_fd.get() ) != 1 )
+    if ( std::fwrite( sa, 6, 1, m_file.get() ) != 1 )
     {
         throw std::runtime_error( std::string( "Error writing to pcap file: " )
                                   + m_filename );
     }
-    if ( std::fputc( ( ethertype >> 8 ) & 0xff, m_fd.get() ) == EOF )
+    if ( std::fputc( ( ethertype >> 8 ) & 0xff, m_file.get() ) == EOF )
     {
         throw std::runtime_error( std::string( "Error writing to pcap file: " )
                                   + m_filename );
     }
-    if ( std::fputc( ( ethertype >> 0 ) & 0xff, m_fd.get() ) == EOF )
+    if ( std::fputc( ( ethertype >> 0 ) & 0xff, m_file.get() ) == EOF )
     {
         throw std::runtime_error( std::string( "Error writing to pcap file: " )
                                   + m_filename );
     }
-    if ( std::fwrite( &packet_payload[0], packet_payload.size(), 1, m_fd.get() )
-         != 1 )
+    if ( std::fwrite(
+             &packet_payload[0], packet_payload.size(), 1, m_file.get() ) != 1 )
     {
         throw std::runtime_error( std::string( "Error writing to pcap file: " )
                                   + m_filename );

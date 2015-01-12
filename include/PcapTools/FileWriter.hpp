@@ -50,7 +50,7 @@ class PcapFileWriter
                       PcapFilePacket const &packet_payload );
 
   private:
-    file_ptr m_fd;
+    File m_file;
     std::string m_filename;
 };
 }

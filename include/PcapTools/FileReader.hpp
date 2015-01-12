@@ -46,7 +46,7 @@ class PcapFileReader
                      PcapFilePacket *packet_payload );
 
   private:
-    file_ptr m_fd;
+    File m_file;
     std::string m_filename;
     bool m_swap;
     bool m_seen_first_timestamp;

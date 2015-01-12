@@ -30,20 +30,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace PcapTools
 {
 PcapFileReader::PcapFileReader( std::string const &filename )
-    : m_fd( make_cfile( filename, "rb" ) )
+    : m_file( filename, "rb" )
     , m_filename( filename )
     , m_swap( false )
     , m_seen_first_timestamp( false )
     , m_first_timestamp_in_microseconds( 0 )
 {
-    if ( !m_fd.get() )
+    if ( !m_file.get() )
     {
         throw std::runtime_error( std::string( "Error opening pcap file: " )
                                   + filename );
     }
 
     pcap_hdr_t header;
-    if ( std::fread( &header, sizeof( header ), 1, m_fd.get() ) != 1 )
+    if ( fread( &header, sizeof( header ), 1, m_file.get() ) != 1 )
     {
         throw std::runtime_error(
             std::string( "Error reading pcap file header: " ) + filename );
@@ -71,14 +71,14 @@ bool PcapFileReader::ReadPacket( uint64_t *timestamp_in_microseconds,
                                  PcapFilePacket &results )
 {
     pcaprec_hdr_t packet_header;
-    if ( std::feof( m_fd.get() ) )
+    if ( std::feof( m_file.get() ) )
     {
         return false;
     }
-    if ( std::fread( &packet_header, sizeof( packet_header ), 1, m_fd.get() )
+    if ( std::fread( &packet_header, sizeof( packet_header ), 1, m_file.get() )
          != 1 )
     {
-        if ( std::feof( m_fd.get() ) )
+        if ( std::feof( m_file.get() ) )
         {
             return false;
         }
@@ -110,7 +110,7 @@ bool PcapFileReader::ReadPacket( uint64_t *timestamp_in_microseconds,
                                  + ( packet_header.ts_usec );
 
     results.resize( (size_t)packet_header.incl_len );
-    if ( std::fread( &results[0], results.size(), 1, m_fd.get() ) != 1 )
+    if ( std::fread( &results[0], results.size(), 1, m_file.get() ) != 1 )
     {
         throw std::runtime_error(
             std::string( "Error reading pcap file packet data from: " )

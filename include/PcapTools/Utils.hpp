@@ -69,23 +69,49 @@ inline uint32_t PcapFileSwap( uint32_t v )
     return r;
 }
 
-using file_ptr = std::unique_ptr<FILE, void ( * )(FILE *)>;
-
-inline file_ptr make_cfile( std::string const &filename, const char *mode )
+class File
 {
-    FILE *f;
-#if defined( _WIN32 )
-    fopen_s( &f, filename.c_str(), mode );
-#else
-    f = std::fopen( filename.c_str(), mode );
-#endif
-    return file_ptr( f,
-                     []( FILE *f )
-                     {
-        if ( f )
+  public:
+    File( std::string const &filename, std::string const &mode )
+        : m_filename( filename )
+    {
+        m_f = fopen( m_filename.c_str(), mode.c_str() );
+    }
+
+    virtual ~File()
+    {
+        if ( m_f )
         {
-            fclose( f );
+            fclose( m_f );
         }
-    } );
-}
+    }
+
+    FILE *open( std::string const &filename, std::string const &mode )
+    {
+        if ( m_f )
+        {
+            fclose( m_f );
+        }
+        m_filename = filename;
+        m_f = fopen( m_filename.c_str(), mode.c_str() );
+        return m_f;
+    }
+
+    void close()
+    {
+        if ( m_f )
+        {
+            fclose( m_f );
+            m_f = 0;
+        }
+    }
+
+    FILE *get() { return m_f; }
+
+    std::string const &getFilename() const { return m_filename; }
+
+  private:
+    std::string m_filename;
+    FILE *m_f;
+};
 }
