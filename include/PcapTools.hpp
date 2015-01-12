@@ -31,7 +31,3 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PcapTools/FileReader.hpp"
 #include "PcapTools/FileWriter.hpp"
 #include "PcapTools/PacketConsumer.hpp"
-
-
-
-

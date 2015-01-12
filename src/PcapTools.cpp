@@ -29,5 +29,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace PcapTools
 {
-    const char *pcaptools_file = __FILE__;
+const char *pcaptools_file = __FILE__;
 }
